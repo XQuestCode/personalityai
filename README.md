@@ -1,0 +1,2 @@
+# personalityai-npm
+ 
