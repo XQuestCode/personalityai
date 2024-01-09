@@ -1,0 +1,222 @@
+---
+title: New Chat Session Endpoint
+description: API documentation
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import Summary from '../../../components/Summary.astro';
+
+<Summary method="post" path="/new" urls="https://personalityai.onrender.com/new"></Summary>
+
+:::tip[Description]
+The `/new` endpoint allows you to initiate a new chat session, introducing a character for which the chatbot will generate responses. This endpoint is useful for establishing a fresh interaction with the chatbot.
+:::
+
+## Examples
+
+<Tabs>
+<TabItem label="cURL">
+```bash "https://your-api-endpoint/new"
+curl -X POST -H "Content-Type: application/json" -d '{"character": "Character Name", "source": "Series Name", "advancedOptions": {"id": "user123"}}' http://your-api-host/new
+```
+</TabItem>
+
+<TabItem label="HTTP Request String">
+```http
+POST /new HTTP/1.1
+Host: your-api-host
+Content-Type: application/json
+
+{
+  "character": "Character Name",
+  "source": "Series Name",
+  "advancedOptions": {
+    "id": "user123"
+  }
+}
+```
+</TabItem>
+
+<TabItem label="Fetch (JS)">
+```js "https://your-api-endpoint/new"
+
+const requestData = {
+  character: 'Character Name',
+  source: 'Series Name',
+  advancedOptions: {
+    id: 'user123'
+  }
+};
+
+const data = await fetch('https://personalityai.onrender.com/new', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(requestData),
+});
+const response = await data.json();
+console.log(response);
+```
+
+</TabItem>
+</Tabs>
+
+## Request
+
+> Headers - **Content-Type:** `application/json`
+
+### Body
+
+The request body must contain a JSON object with the following properties:
+
+| Parameter                           | Type        | Description                                                        | Required |
+| ----------------------------------- | ----------- | ------------------------------------------------------------------ | -------- |
+| [character](#character)             | _(string)_  | The character's name for which the response should be generated.   | ✔        |
+| [source](#source)                   | _(string)_  | The series or source associated with the character.                | ✔        |
+| [advancedOptions](#advancedoptions) | _(object)_  | Additional advanced options for customizing the response.          |          |
+
+## Response
+
+### Body
+
+The API response will be provided in JSON format, offering details about the introduced character and the initiation of a new chat session.
+
+**Example:**
+```json
+{
+  "character": "Character Name",
+  "source": "Series Name",
+  "image": "https://example.com/character-image.jpg",
+  "introduction": "Greetings! I am Character Name from the Series Name. How may I assist you today?",
+  "advancedOptions": {
+    "id": "user123"
+  }
+}
+```
+
+## Error Handling
+
+In case of an error, the response will include an error message.
+
+<Tabs>
+<TabItem label="Missing Character or Source">
+This error is returned when either the character or source is missing in the request body.
+
+```json
+{
+  "error": "Invalid response. Please provide both character and source."
+}
+```
+</TabItem>
+</Tabs>
+
+## Examples
+
+### Example Request
+
+```json
+POST /new
+
+{
+  "character": "Sherlock Holmes",
+  "source": "Sherlock Holmes Series",
+  "advancedOptions": {
+    "id": "user123"
+  }
+}
+```
+
+### Example Response
+
+```json
+{
+  "character": "Sherlock Holmes",
+  "source": "Sherlock Holmes Series",
+  "image": "https://example.com/sherlock-holmes-image.jpg",
+  "introduction": "Greetings! I am Sherlock Holmes from the Sherlock Holmes Series. How may I assist you today?",
+  "advancedOptions": {
+    "id": "user123"
+  }
+}
+```
+
+## Types
+
+### character
+
+| **Type**  | **Description**                                       | **Example**            |
+|-----------|-------------------------------------------------------|------------------------|
+| _string_  | The character's name for which the response is generated. | `"Sherlock Holmes"`    |
+
+### source
+
+| **Type**  | **Description**                               | **Example**                |
+|-----------|-----------------------------------------------|----------------------------|
+| _string_  | The series or source associated with the character. | `"Sherlock Holmes Series"` |
+
+### advancedOptions
+For more details on advanced options, see [Advanced Options](/api/chat#advanced-options).
+
+**Type:** _object_
+
+| **Parameter**  | **Type**   | **Description**                                                            | **Example**                |
+|----------------|------------|----------------------------------------------------------------------------|----------------------------|
+| **id**         | _string_   | Identifier for the user.                                                   | `"user123"`                |
+
+**Example** 
+<Tabs>
+<TabItem label="cURL">
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{
+  "character": "Sherlock Holmes",
+  "source": "Sherlock Holmes Series",
+  "advancedOptions": {
+    "id": "user123"
+  }
+}' http://your-api-host/new
+```
+</TabItem>
+
+<TabItem label="HTTP Request String">
+```http
+POST /new HTTP/1.1
+Host: your-api-host
+Content-Type: application/json
+
+{
+  "character": "Sherlock Holmes",
+  "source": "Sherlock Holmes Series",
+  "advancedOptions": {
+    "id": "user123"
+  }
+}
+```
+</TabItem>
+
+<TabItem label="Fetch (JS)">
+```js
+// my-test-file.js
+const apiUrl = 'http://your-api-host/new';
+
+const requestData = {
+  character: 'Sherlock Holmes',
+  source: 'Sherlock Holmes Series',
+  advancedOptions: {
+    id: 'user123'
+  }
+};
+
+const data = await fetch(apiUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(requestData),
+});
+const response = await data.json();
+console.log(response);
+```
+
+</TabItem>
+</Tabs>

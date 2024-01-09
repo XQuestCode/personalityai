@@ -1,0 +1,77 @@
+---
+title: Quick Start
+description: Get started with the Chatbot API
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+
+# Quick Start Guide
+
+This quick start guide will help you get up and running with the Chatbot API. Follow the steps below to engage in dynamic conversations and explore the API's functionalities.
+
+<Tabs>
+  <TabItem value="curl" label="cURL">
+  
+  ## cURL
+
+  To make a simple request to the Chatbot API using cURL, follow the example below.
+
+  ```bash "https://personalityai.onrender.com/chat"
+  curl -X POST https://personalityai.onrender.com/chat \
+    -H "Content-Type: application/json" \
+    -d '{
+      "prompt": "Hello, chatbot!",
+      "character": "John Doe",
+      "source": "Demo Application"
+    }'
+  ```
+
+  Replace the placeholder values with your own data.
+
+  </TabItem>
+
+  <TabItem value="javascript" label="JavaScript">
+
+  ## JavaScript
+
+  If you prefer using JavaScript, you can make a request using a library like Axios.
+
+  ```javascript
+  const axios = require('axios');
+
+  const apiUrl = 'https://personalityai.onrender.com/chat';
+
+  const requestData = {
+    prompt: 'Hello, chatbot!',
+    character: 'John Doe',
+    source: 'Demo Application',
+  };
+
+  axios.post(apiUrl, requestData)
+    .then(response => {
+      console.log('Chatbot response:', response.data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  ```
+
+  Customize the `requestData` object according to your needs.
+
+  </TabItem>
+</Tabs>
+
+## Response
+
+The API will respond with the chatbot's reply based on your provided prompt, character, and source.
+
+**Example Response:**
+
+```json
+{
+  "response": "Hello! How can I assist you today?"
+}
+```
+
+Congratulations! You've successfully made your first request to the Chatbot API. Explore more endpoints and functionalities by referring to the [API Reference](./api-reference) and other sections in the documentation.

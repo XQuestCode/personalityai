@@ -1,0 +1,71 @@
+---
+title: API FAQ
+description: Frequently Asked Questions about the Chatbot API
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import Summary from '../../../components/Summary.astro';
+
+<Summary method="post" path="/chat" urls="https://personalityai.onrender.com/chat"></Summary>
+<Summary method="post" path="/new" urls="https://personalityai.onrender.com/new"></Summary>
+<Summary method="post" path="/images" urls="https://personalityai.onrender.com/images"></Summary>
+<Summary method="get" path="/chat-history/:userId" urls="https://personalityai.onrender.com/chat-history/user123"></Summary>
+
+## General Questions
+
+### What is the purpose of this API?
+
+This API provides an interface for interacting with a chatbot, allowing users to engage in conversations, retrieve chat history, and obtain images based on specified sources.
+
+### How do I initiate a chat with the chatbot?
+
+To initiate a chat, make a POST request to the `/chat` endpoint, providing the necessary parameters such as `prompt`, `character`, and `source`.
+
+### Can I introduce a new character and retrieve an introduction using this API?
+
+Yes, you can! Utilize the `/new` endpoint with a POST request, providing the `character` and `source` parameters. The API will return an introduction for the specified character.
+
+## Chat and Conversation
+
+### How does the chat endpoint work?
+
+To engage in a chat, send a POST request to the `/chat` endpoint with the required parameters like `prompt`, `character`, and `source`. The API will return the chatbot's response based on the input.
+
+### Is it possible to retrieve the chat history for a specific user?
+
+Yes, you can retrieve the chat history for a specific user by making a GET request to the `/chat-history/:userId` endpoint, providing the user's unique identifier (`userId`) in the path.
+
+### What information does the chat history include?
+
+The chat history includes a list of messages exchanged between the user and the chatbot. Each message has a `role` (user or assistant) and `content` (the message text).
+
+## Image Retrieval
+
+### How can I retrieve images based on a specified source?
+
+Use the `/images` endpoint with a POST request, providing the `source` and `number` parameters. Additional options for customizing image retrieval can be included in the `options` parameter.
+
+### What does the response for image retrieval look like?
+
+The API response for image retrieval will be a JSON object containing an array of image URLs.
+
+
+## Error Handling
+
+### What happens if I provide an invalid API key?
+
+If an invalid API key is provided, the API will return an error message indicating the issue. Make sure to use a valid API key for authentication.
+
+### How does the API handle rate limiting?
+
+The API applies rate limiting to control the number of requests. If the rate limit is exceeded, the API will respond with an error message.
+
+## Authentication and Security
+
+### How do I authenticate API requests?
+
+Include the API key in the request body using the `apikey` parameter. This key is used for authentication and determining the appropriate generative model.
+
+### How does the API handle security?
+
+The API uses HTTPS to ensure that all requests are encrypted. This prevents unauthorized access to sensitive information such as API keys.

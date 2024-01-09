@@ -1,0 +1,133 @@
+---
+title: Whatsapp Chat Bot
+description: A chat bot for whatsapp based on PersonalityAI
+---
+
+# Personality AI Chat Bot Setup Guide for WhatsApp
+
+In this guide, we'll take you through the process of setting up a Personality AI Chat Bot for WhatsApp using the provided API. Follow these steps to integrate the bot into your WhatsApp account and start engaging in chat conversations with unique personalities!
+
+## Initial Steps
+
+1. **Install Node.js:**
+   - Ensure that you have Node.js installed on your machine. If not, you can download it from [nodejs.org](https://nodejs.org/).
+
+2. **Create a New WhatsApp Client:**
+    - Install the `whatsapp-web.js` and `qrcode-terminal` library using npm:
+     ```bash
+     npm install whatsapp-web.js qrcode-terminal
+     ```
+
+3. **Generate QR Code for Authentication:**
+   - Use the provided code to create a new WhatsApp client and generate a QR code for authentication.
+
+```javascript
+const { Client } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+const client = new Client();
+
+client.on('qr', (qr) => {
+    qrcode.generate(qr, { small: true });
+});
+
+client.on('ready', () => {
+    console.log('Client is ready!');
+});
+
+client.initialize();
+```
+
+4. **Scan QR Code:**
+   - Run the script, scan the generated QR code with your WhatsApp app to authenticate the client.
+
+## Bot Code Integration
+
+Now that your WhatsApp client is ready, integrate the provided code to enable the bot to respond to incoming messages.
+
+```javascript
+// ... (Previous code)
+
+// Event listener for incoming messages
+client.on('message', async (message) => {
+    // Extract message details
+    const messageObj = {
+        text: message.body,
+        chat: {
+            id: message.from,
+            type: 'whatsapp', // Add a type to identify the source (WhatsApp)
+        },
+    };
+
+    if (messageObj.text === 'ping') {
+        message.reply('pong');
+    } else {
+        // If you want the bot to reply without a specific prefix
+        const prompt = messageObj.text;
+        const character = 'Walter White';
+        const source = 'Breaking Bad';
+        const response = await sendAPIRequest(prompt, character, source);
+        // Handle the response as needed
+    }
+});
+
+client.initialize();
+```
+# Full code
+```js
+// index.js
+// Import required modules
+const { Client } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+
+// Create a new client instance
+const client = new Client();
+
+// Generate and display QR code for authentication
+client.on('qr', (qr) => {
+    qrcode.generate(qr, { small: true });
+});
+
+// Log a message when the client is ready
+client.on('ready', () => {
+    console.log('Client is ready!');
+});
+
+// Function to send API request
+async function sendAPIRequest(prompt, character, source) {
+    const response = await fetch('https://personalityai.onrender.com/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, character, source }),
+    });
+    const data = await response.text();
+    return data;
+}
+
+// Handle incoming messages
+client.on('message', async (message) => {
+    // Extract message details
+    const messageObj = {
+        text: message.body,
+        chat: {
+            id: message.from,
+            type: 'whatsapp', // Add a type to identify the source (WhatsApp)
+        },
+    };
+
+    if (messageObj.text === 'ping') {
+        // Reply with 'pong' if the message is 'ping'
+        message.reply('pong');
+    } else {
+        // Send API request for other messages
+        const prompt = messageObj.text;
+        const character = 'Walter White';
+        const source = 'Breaking Bad';
+        const response = await sendAPIRequest(prompt, character, source);
+        // Handle the response here
+    }
+});
+
+// Initialize the client
+client.initialize();
+```
+Now, your WhatsApp bot is ready to engage in chat conversations with unique personalities! Send messages and enjoy the interactive experience.

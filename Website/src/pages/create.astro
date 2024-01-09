@@ -1,0 +1,479 @@
+---
+import DefaultLayout from '../layouts/DefaultLayout.astro'
+import { Icon } from '@astrojs/starlight/components'
+---
+
+<script is:inline>
+  let isAdvanced = false
+  async function saveAndSend() {
+    const character = document.getElementById('character').value
+    const source = document.getElementById('source').value
+    if (!character || !source) {
+      //alert("Please enter character and source");
+      return
+    }
+
+    const button = document.getElementById('submitButton')
+    button.disabled = true
+    button.classList.add('cursor-not-allowed', 'opacity-50')
+    const spinner = document.getElementById('spinner')
+    spinner.classList.toggle('hidden', false)
+    const buttonText = document.getElementById('buttonText')
+    buttonText.innerText = 'Loading..'
+
+    //Optional advanced options
+    // You can perform additional validation here if needed
+    // const { apikey, chatModel, outlimit, safetySettings } = advancedOptions || {};
+    // Example usage:
+    // const clientSafetySettings = {
+    //   Harassment: 'High',
+    //   SexuallyExplicit: 'Low',
+    //   HateSpeech: 'Medium',
+    //   Unspecified: 'Default',
+    //   DangerousContent: 'None',
+    // };
+    let newData = {
+      character,
+      source,
+    }
+
+    const jsonData = JSON.stringify(newData)
+    console.log(jsonData)
+
+    const data = await fetch('https://personalityai.onrender.com/profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
+    })
+    console.log('DATA', data)
+    let some = await data.json()
+    if (isAdvanced) {
+      const advancedOptions = await fetchAdvanced()
+      some = {
+        ...some,
+        advancedOptions,
+      }
+    }
+    console.log('JSON DATA', some)
+    const encodedData = btoa(JSON.stringify(some))
+    // Redirect to the next page with the encoded data as a query parameter
+    window.location.href = `/agent?data=${encodedData}`
+  }
+  function threshold(value) {
+    switch (value) {
+      case 0:
+        return 'None'
+      case 1:
+        return 'Low'
+      case 2:
+        return 'Medium'
+      case 3:
+        return 'High'
+      case 4:
+        return 'Default'
+      default:
+        return 'Default'
+    }
+  }
+  async function fetchAdvanced() {
+    const apikey = document.getElementById('api-key').value
+    const chatModel = document.getElementById('chat-model').value
+    const outlimit = document.getElementById('output-limit').value
+    const safetySettings = document.getElementById('safety-settings').checked
+    if (safetySettings) {
+      const harassment = threshold(document.getElementById('harassment-slider').value)
+      const hateSpeech = threshold(document.getElementById('hate-speech-slider').value)
+      const sexuallyExplicit = threshold(document.getElementById('sexually-explicit-slider').value)
+      const dangerous = threshold(document.getElementById('dangerous-slider').value)
+      const unspecified = threshold(document.getElementById('unspecified-slider').value)
+
+      const id = document.getElementById('uniqueid').value
+      const memory = document.getElementById('chat-memory').value
+      const isMemory = memory === 'enable' ? true : false
+      const clientSafetySettings = {
+        Harassment: harassment,
+        SexuallyExplicit: sexuallyExplicit,
+        HateSpeech: hateSpeech,
+        Unspecified: unspecified,
+        DangerousContent: dangerous,
+      }
+
+      const advancedOptions = {
+        apikey,
+        chatModel,
+        outlimit,
+        isMemory,
+        id,
+        clientSafetySettings,
+      }
+      return advancedOptions
+    }
+    const advancedOptions = {
+      apikey,
+      chatModel,
+      outlimit,
+      safetySettings,
+    }
+    return advancedOptions
+  }
+  
+  function saveAdvanced(event) {
+    event.preventDefault()
+    isAdvanced = true
+  }
+  
+</script>
+
+<DefaultLayout title="Create">
+  <div
+    class="mainbody =w-full max-w-sm rounded-lg border border-gray-200 bg-white p-4 shadow sm:p-6 md:p-8 dark:border-gray-700 dark:bg-gray-800"
+  >
+    <form id="personalityForm" class="space-y-4">
+      <div class="rounded-t border-b dark:border-gray-600">
+        <h2 class="text-3xl font-medium text-gray-900 dark:text-white" style="font-family: 'Comfortaa', sans-serif;">
+          Create your AI
+
+          <button
+            id="advancedButton"
+            data-tooltip-target="tooltip-advanced"
+            data-modal-target="crud-modal"
+            data-modal-toggle="crud-modal"
+            type="button"
+            class="ms-auto inline-flex items-center justify-center rounded-lg bg-transparent text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+          >
+            <Icon name="setting" class="h-6 w-6" />
+            <span class="sr-only">Advanced Settings</span>
+            <div
+              id="tooltip-advanced"
+              role="tooltip"
+              class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700"
+            >
+              Configure Advanced Settings
+              <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+          </button>
+        </h2>
+
+        <div class="mb-5">
+          <label for="character" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            >Enter character:
+          </label>
+          <input
+            type="text"
+            id="character"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:shadow-sm-light dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            placeholder="Example: Walter White"
+            required
+          />
+        </div>
+
+        <div class="mb-5">
+          <label for="source" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Enter source:</label>
+          <input
+            type="text"
+            id="source"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:shadow-sm-light dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            placeholder="Example: Breaking Bad"
+            required
+          />
+        </div>
+
+        <button
+          type="submit"
+          onclick="saveAndSend()"
+          id="submitButton"
+          class="focus:shadow-outline-indigo w-full rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 focus:outline-none active:bg-indigo-800"
+        >
+          <i class="fa fa-spinner fa-spin hidden" id="spinner"></i>
+          <span id="buttonText" style="font-family: 'Comfortaa', sans-serif;">Create</span>
+        </button>
+      </div>
+    </form>
+  </div>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet" />
+
+    <!-- Main modal -->
+    <div
+      id="crud-modal"
+      tabindex="-1"
+      aria-hidden="true"
+      class="fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
+    >
+      <div class="relative max-h-full w-full max-w-md p-4">
+        <!-- Modal content -->
+        <div class="relative rounded-lg bg-white shadow dark:bg-gray-700">
+          <!-- Modal header -->
+          <div class="flex items-center justify-between rounded-t border-b p-4 md:p-5 dark:border-gray-600">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Advanced Settings</h3>
+            <button
+              type="button"
+              class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+              data-modal-toggle="crud-modal"
+            >
+              <i class="fa-solid fa-xmark"></i>
+              <span class="sr-only">Close</span>
+            </button>
+          </div>
+          <!-- Modal body -->
+          <div class="p-4 md:p-5">
+            <!-- ... Existing form fields ... -->
+            <form class="space-y-4" action="#">
+              <div class="mb-4 grid grid-cols-2 gap-4">
+                <!-- API Key -->
+                <div class="col-span-2">
+                  <label for="api-key" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >API Key: <a href="https://makersuite.google.com/app/apikey">GeminiAI</a> or <a
+                      href="https://platform.openai.com/api-keys">OpenAI</a
+                    ></label
+                  >
+                  <input
+                    type="text"
+                    name="api-key"
+                    id="api-key"
+                    class="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
+                    placeholder="Enter API Key"
+                    required
+                  />
+                </div>
+                <!-- Output Token Limit and Chat Model -->
+                <div class="col-span-2 sm:col-span-1">
+                  <label for="output-limit" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >Output Token Limit</label
+                  >
+                  <input
+                    type="number"
+                    min="0"
+                    max="2024"
+                    name="output-limit"
+                    id="output-limit"
+                    class="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
+                    placeholder="Enter limit"
+                  />
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                  <label for="chat-model" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >Chat Model</label
+                  >
+                  <select
+                    id="chat-model"
+                    class="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
+                  >
+                    <option class="text-blue-500 dark:text-blue-500" selected="" disabled>Select chat model</option>
+                    <optgroup label="GeminiAI">
+                      <option value="gemini-pro">gemini-pro</option>
+                      <option value="embedding-001">embedding-001</option>
+                      <option value="aqa">aqa</option>
+                      <!-- Add more GeminiAI models as needed -->
+                    </optgroup>
+                    <optgroup label="Open AI">
+                      <option value="gpt-3.5-turbo-0613">gpt-3.5-turbo-0613</option>
+                      <option value="gpt-3.5-turbo-0301">gpt-3.5-turbo-0301</option>
+                      <option value="gpt-3.5-turbo-1106">gpt-3.5-turbo-1106</option>
+                      <option value="gpt-3.5-turbo-instruct">gpt-3.5-turbo-instruct</option>
+                      <option value="gpt-3.5-turbo-16k">gpt-3.5-turbo-16k</option>
+                      <option value="gpt-4-0314">gpt-4-0314</option>
+                      <option value="gpt-4-32k-0314">gpt-4-32k-0314</option>
+                      <option value="gpt-4-1106-preview">gpt-4-1106-preview</option>
+                      <option value="gpt-4-vision-preview">gpt-4-vision-preview</option>
+                      <option value="gpt-4">gpt-4</option>
+                      <option value="gpt-4-0613">gpt-4-0613</option>
+                      <option value="text-davinci-003">text-davinci-003</option>
+                      <option value="text-davinci-002">text-davinci-002</option>
+                      <option value="code-davinci-003">code-davinci-003</option>
+                      <!-- Add more Open AI models as needed -->
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                  <label for="uniqueid" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >Unique ID</label
+                  >
+                  <input
+                    type="text"
+                    id="uniqueid"
+                    class="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
+                    placeholder="Enter Unique ID"
+                  />
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                  <label for="chat-memory" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                    >Memory retention</label
+                  >
+                  <select
+                    id="chat-memory"
+                    class="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
+                  >
+                    <option class="text-blue-500 dark:text-blue-500" selected disabled>Select here</option>
+                    <option value="enable">Enable</option>
+                    <option value="disable">Disable</option>
+                    <!-- Add more GeminiAI models as needed -->
+                  </select>
+                </div>
+                <div class="col-span-2"></div>
+
+                <!-- Safety Settings -->
+                <div class="col-span-2">
+                  <input autocomplete="off" type="checkbox" id="safety-settings" name="safety-settings" />
+                  <label for="safety-settings" class="text-sm font-medium text-gray-900 dark:text-white"
+                    >Enable Safety Settings</label
+                  >
+
+                  <!-- Slider Section -->
+                  <div id="safety-slider-section" class="hidden">
+                    <!-- Add sliders for each safety category -->
+                    <div class="relative mb-6">
+                      <span class="absolute -bottom-4 start-0 text-sm text-gray-500 dark:text-gray-400">None</span>
+                      <span
+                        class="absolute -bottom-4 start-1/4 -translate-x-1/2 text-sm text-gray-500 dark:text-gray-400"
+                        >Low</span
+                      >
+                      <span
+                        class="absolute -bottom-4 start-1/2 -translate-x-1/2 text-sm text-gray-500 dark:text-gray-400"
+                        >Medium</span
+                      >
+                      <span
+                        class="absolute -bottom-4 start-3/4 -translate-x-1/2 text-sm text-gray-500 dark:text-gray-400"
+                        >High</span
+                      >
+                      <span class="absolute -bottom-4 end-0 text-sm text-gray-500 dark:text-gray-400">Default</span>
+                      <div class="mt-4">
+                        <label
+                          for="harassment-slide"
+                          class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Harassment</label
+                        >
+                        <input
+                          id="harassment-slider"
+                          type="range"
+                          min="0"
+                          max="4"
+                          value="1"
+                          step="1"
+                          class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+                        />
+                      </div>
+                      <div class="mt-4">
+                        <label
+                          for="hate-speech-slider"
+                          class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Hate speech</label
+                        >
+                        <input
+                          id="hate-speech-slider"
+                          type="range"
+                          min="0"
+                          max="4"
+                          value="3"
+                          step="1"
+                          class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+                        />
+                      </div>
+                      <div class="mt-4">
+                        <label
+                          for="sexually-explicit-slider"
+                          class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Sexually explicit</label
+                        >
+                        <input
+                          id="sexually-explicit-slider"
+                          type="range"
+                          min="0"
+                          max="4"
+                          value="2"
+                          step="1"
+                          class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+                        />
+                      </div>
+                      <div class="mt-4">
+                        <label
+                          for="dangerous-slider"
+                          class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Dangerous</label
+                        >
+                        <input
+                          id="dangerous-slider"
+                          type="range"
+                          min="0"
+                          max="4"
+                          value="5"
+                          step="1"
+                          class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+                        />
+                      </div>
+                      <div class="mt-4">
+                        <label
+                          for="unspecified-slider"
+                          class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Unspecified</label
+                        >
+                        <input
+                          id="unspecified-slider"
+                          type="range"
+                          min="0"
+                          max="4"
+                          value="3"
+                          step="1"
+                          class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Add sliders for other safety categories as needed -->
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                data-modal-toggle="crud-modal"
+                onclick="saveAdvanced(event)"
+                id="saveAdvancedButton"
+                class="inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                <svg
+                  class="-ms-1 me-1 h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                    clip-rule="evenodd"></path>
+                </svg>
+                Save
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script is:inline>
+      // Add script to toggle visibility of safety slider section based on checkbox state
+  document.getElementById('safety-settings').addEventListener('change', function () {
+    var sliderSection = document.getElementById('safety-slider-section')
+    sliderSection.classList.toggle('hidden', !this.checked)
+  })
+    </script>
+    <style>
+      .mainbody {
+        position: relative;
+        top: 60%;
+        left: 50%;
+        box-shadow: 40%;
+        
+        transform: translate(-50%, -50%) scale(1.1);
+        /* height: 100vh; Adjust as needed */
+        filter: drop-shadow(0 0 3rem var(--action-color));
+      }
+
+      #advancedButton {
+        padding: 4px;
+        margin-top: -4%;
+        margin-bottom: 4%;
+        margin-right: -2%;
+        margin-left: 17%;
+      }
+    </style>
+  
+</DefaultLayout>

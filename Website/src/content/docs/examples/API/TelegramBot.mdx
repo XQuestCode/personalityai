@@ -1,0 +1,69 @@
+---
+title: Telegram Bot
+description: Telegram Bot using Personality AI
+---
+import { Icon } from '@astrojs/starlight/components'
+
+# Personality AI Chat Bot Setup Guide for Telegram <Icon name="telegram" />
+
+![Telegram Bot](https://i.imgur.com/s6ewApe.png)
+
+In this guide, we'll walk you through the process of setting up a Personality AI Chat Bot for Telegram using the provided API. Follow these steps to integrate the bot into your Telegram account and start chatting with unique personalities!
+
+## Initial Steps
+
+1. **Create a New Telegram Bot:**
+    - Open the Telegram app and search for the "@BotFather" bot.
+    - Start a chat with "@BotFather" and use the `/newbot` command to create a new bot.
+    - Follow the instructions to set a name and username for your bot.
+    - Once created, you'll receive a token for your bot. Save this token for later.
+
+2. **Install Node.js:**
+    - Ensure that you have Node.js installed on your machine. If not, you can download it from [nodejs.org](https://nodejs.org/).
+
+3. **Install Required Libraries:**
+    - Install the `node-telegram-bot-api` library using npm:
+    ```bash
+    npm install node-telegram-bot-api
+    ```
+
+## Bot Code Integration
+
+Now that you have your Telegram bot token and the required libraries installed, integrate the provided code to enable the bot to respond to incoming messages.
+
+```js
+// index.js
+const TelegramBot = require('node-telegram-bot-api');
+
+// replace the value below with the Telegram token you receive from @BotFather
+const token = 'your-bot-token';
+
+// Create a bot that uses 'polling' to fetch new updates
+const bot = new TelegramBot(token, { polling: true });
+
+async function sendAPIRequest(prompt, character, source) {
+    const response = await fetch('https://personalityai.onrender.com/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, character, source }),
+    });
+    const data = await response.text();
+
+    return data;
+}
+
+// Listen for any kind of message and respond with the API result
+bot.on('message', async (msg) => {
+    const chatId = msg.chat.id;
+    const prompt = msg.text;
+    const character = 'Walter White';
+    const source = 'Breaking Bad';
+
+    const response = await sendAPIRequest(prompt, character, source);
+    // send a message to the chat acknowledging receipt of their message
+    bot.sendMessage(chatId, response);
+});
+```
+
+Now, your Telegram bot is ready to engage in chat conversations with unique personalities! Send messages to your bot and enjoy the interactive experience.
+![Telegram Bot](https://i.imgur.com/s6ewApe.png)

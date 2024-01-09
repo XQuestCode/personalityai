@@ -1,0 +1,181 @@
+---
+title: Webpage Chatting
+description: Create a simple webpage for chatting with Personality AI.
+---
+
+import { Icon } from 'astro-icon'
+
+# Creating a Chatting Webpage with Personality AI 
+
+In this guide, you'll learn how to create a simple webpage for chatting with Personality AI. We'll use HTML, CSS, and JavaScript to build a basic interface and incorporate the Personality AI API for interactive conversations.
+
+## Prerequisites
+
+1. **Personality AI API Key:**
+   - Obtain your Personality AI API key. If you don't have one, visit [Personality AI](https://personality-ai.com/) to sign up and get your API key.
+
+2. **Code Editor:**
+   - Use a code editor of your choice, such as Visual Studio Code or Sublime Text.
+
+## Step 1: Set Up Your HTML
+
+Create a new HTML file (`index.html`) and set up the basic structure for your webpage.
+
+```html
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality AI Chat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="chat-container">
+    <div id="chat-display"></div>
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <button id="send-btn">Send</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
+```
+
+## Step 2: Style Your Chat Interface
+
+Create a new CSS file (`styles.css`) to style your chat interface.
+
+```css
+/* styles.css */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+
+#chat-container {
+    width: 300px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#chat-display {
+    height: 300px;
+    padding: 10px;
+    overflow-y: auto;
+    border-bottom: 1px solid #ddd;
+}
+
+#user-input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: none;
+    outline: none;
+    border-top: 1px solid #ddd;
+}
+
+#send-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+.message {
+    display: flex;
+    justify-content: flex-start;
+    margin: 10px;
+}
+
+.user .message-bubble {
+    background-color: #4caf50;
+    color: #fff;
+    border-radius: 15px 15px 0 15px;
+    padding: 10px;
+}
+
+.assistant .message-bubble {
+    background-color: #ddd;
+    color: #333;
+    border-radius: 15px 15px 15px 0;
+    padding: 10px;
+}
+```
+
+## Step 3: Implement Chat Logic with JavaScript
+
+Create a new JavaScript file (`app.js`) to handle the chat logic.
+
+```javascript
+// app.js
+document.addEventListener('DOMContentLoaded', () => {
+    const chatDisplay = document.getElementById('chat-display');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // Replace 'your-api-key' with your Personality AI API key
+    const apiKey = 'your-api-key';
+    const apiUrl = 'https://personalityai.onrender.com/chat';
+
+    sendBtn.addEventListener('click', () => {
+        const userMessage = userInput.value;
+        if (userMessage.trim() !== '') {
+            displayMessage('user', userMessage);
+            userInput.value = '';
+
+            // Send user message to Personality AI
+            sendAPIRequest(userMessage);
+        }
+    });
+
+    async function sendAPIRequest(prompt) {
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({ prompt, character: 'Walter White', source: 'Breaking Bad' }),
+            });
+            const data = await response.text();
+            displayMessage('assistant', data);
+        } catch (error) {
+            console.error('Error sending API request:', error);
+        }
+    }
+
+  function displayMessage(role, content) {
+        const chatDisplay = document.getElementById('chat-display');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', role);
+
+        const bubbleElement = document.createElement('div');
+        bubbleElement.classList.add('message-bubble');
+        bubbleElement.textContent = content;
+
+        messageElement.appendChild(bubbleElement);
+        chatDisplay.appendChild(messageElement);
+
+        // Auto-scroll to the latest message
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+});
+```
+
+## Step 4: Test Your Chat Webpage
+
+Open your `index.html` file in a web browser, and you should see a simple chat interface. Type a message, click "Send," and the bot will respond with a generated message based on Personality AI.
+![Chatting Webpage](https://i.imgur.com/FGPA9RV.png)
+That's it! You've successfully created a chatting webpage using Personality AI. Customize the interface and expand the functionality to suit your project's needs.

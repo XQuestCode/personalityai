@@ -1,0 +1,149 @@
+---
+title: Image Retrieval Endpoint
+description: API documentation
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import Summary from '../../../components/Summary.astro';
+
+<Summary method="post" path="/images" urls="https://personalityai.onrender.com/images"></Summary>
+
+:::tip[Description]
+The `/images` endpoint enables the retrieval of images based on a specified source, allowing users to incorporate visual content in their applications.
+:::
+
+## Request
+
+> Headers - **Content-Type:** `application/json`
+
+### Body
+
+The request body must contain a JSON object with the following properties:
+
+| Parameter    | Type        | Description                                        | Required |
+|--------------|-------------|----------------------------------------------------|----------|
+| [source](#source)           | _(string)_  | The source for image retrieval.                   | ✔        |
+| [number](#number)           | _(number)_  | The number of images to retrieve.                 | ✔        |
+| [options](#options)         | _(object)_  | Additional options for customizing image retrieval.|          |
+
+### Examples
+
+#### Example Request
+
+```json
+POST /images
+
+{
+  "source": "Sherlock Holmes",
+  "number": 5,
+  "options": {
+    "queryStringAddition": "&tbs=ic:portrait,isz:l",
+    "filterOutDomains": ["twitter.com", "instagram.com"]
+  }
+}
+```
+
+## Response
+
+### Body
+
+The API response will be provided in a JSON format, offering an array of image URLs.
+
+**Example:**
+```json
+{
+  "images": [
+    "https://example.com/image1.jpg",
+    "https://example.com/image2.jpg",
+    "https://example.com/image3.jpg"
+  ]
+}
+```
+
+## Error Handling
+
+In case of an error, the response will include an error message.
+
+<Tabs>
+<TabItem label="Invalid body">
+This error is returned when the request body is missing or invalid.
+```json
+{
+  "error": "Enter source and number of images!"
+}
+```
+
+</TabItem>
+<TabItem label="Missing API key">
+This error is returned when the advancedOptions request body is missing apikey.
+```json
+{
+  "error": "Invalid API key. Please provide a valid API key."
+}
+```
+</TabItem>
+
+<TabItem label="Invalid response">
+This error is returned when the API response is invalid.
+```json
+{
+  "error": "Invalid response!"
+}
+```
+</TabItem>
+</Tabs>
+
+## Types
+
+### source
+
+| **Type**  | **Description**                               | **Example**                |
+|-----------|-----------------------------------------------|----------------------------|
+| _string_  | The source for image retrieval.               | `"Sherlock Holmes"`        |
+
+### number
+
+| **Type**  | **Description**                               | **Example**                |
+|-----------|-----------------------------------------------|----------------------------|
+| _number_  | The number of images to retrieve.             | `5`                        |
+
+### options
+**Type:** _object_
+
+| **Parameter**             | **Type**   | **Description**                                   | **Example**                    |
+|---------------------------|------------|---------------------------------------------------|--------------------------------|
+| **queryStringAddition**   | _string_   | Additional query string to append to the search term. | `"&tbs=ic:portrait,isz:l"`   |
+| **filterOutDomains**      | _string[]_ | Domains to filter out from the search results.     | `["twitter.com", "instagram.com"]` |
+
+#### Examples
+
+#### Example Request
+
+```json
+POST /images
+
+{
+  "source": "Sherlock Holmes",
+  "number": 5,
+  "options": {
+    "queryStringAddition": "&tbs=ic:portrait,isz:l",
+    "filterOutDomains": ["twitter.com", "instagram.com"]
+  }
+}
+```
+
+#### Example Response
+
+```json
+{
+  "images": [
+    "https://example.com/image1.jpg",
+    "https://example.com/image2.jpg",
+    "https://example.com/image3.jpg"
+  ]
+}
+```
+
+Utilize this endpoint to enrich your applications with relevant visual content based on the specified source.
+
+---

@@ -1,0 +1,323 @@
+---
+title: Chat endpoint
+description: API documentation
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import Summary from '../../../components/Summary.astro';
+
+
+<Summary method="post" path="/chat" urls="https://personalityai.onrender.com/chat"></Summary>
+
+:::tip[Description]
+The `/chat` endpoint allows you to interact with the chatbot and generate responses based on user prompts, characters, and sources.
+:::
+
+## Examples
+
+<Tabs>
+<TabItem label="cURL">
+```bash "POST" "https://personalityai.onrender.com/chat"
+curl -X POST -H "Content-Type: application/json" -d '{"prompt": "Your prompt here", "character": "Character Name", "source": "Series Name"}' https://personalityai.onrender.com/chat
+
+```
+</TabItem>
+
+<TabItem label="HTTP Request String">
+```http "POST" "https://personalityai.onrender.com/chat"
+POST /chat HTTP/1.1
+Host: https://personalityai.onrender.com/chat
+Content-Type: application/json
+
+{
+  "prompt": "Your prompt here",
+  "character": "Character Name",
+  "source": "Series Name"
+}
+
+```
+</TabItem>
+
+<TabItem label="Fetch (JS)">
+```js "POST" "https://personalityai.onrender.com/chat"
+
+const requestData = {
+  prompt: 'Your prompt here',
+  character: 'Character Name',
+  source: 'Series Name',
+};
+
+const data = await fetch('https://personalityai.onrender.com/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(requestData),
+});
+const response = await data.text();
+console.log(response);
+```
+
+</TabItem>
+</Tabs>
+
+
+
+## Request
+
+> Headers - **Content-Type:** `application/json`
+
+### Body
+
+The request body must contain a JSON object with the following properties:
+
+| Parameter                           | Type        | Description                                                        | Required |
+| ----------------------------------- | ----------- | ------------------------------------------------------------------ | -------- |
+| [prompt](#prompt)                   | _(string)_  | The user's input or prompt.                                        | ✔        |
+| [character](#character)             | _(string)_  | The character's name for which the response should be generated.   | ✔        |
+| [source](#source)                   | _(string)_  | The series or source associated with the character.                | ✔        |
+| [advancedOptions](#advancedoptions) | _(object)_  | Additional advanced options for customizing the response.          |          |
+
+## Response
+
+### Body
+
+The API response will be provided in text (***string***) format, offering a clear and human-readable communication.
+
+```md
+Hello! How can I assist you today
+```
+
+## Error Handling
+
+In case of an error, the response will include an error message.
+
+<Tabs>
+<TabItem label="Inappropriate response">
+This error is returned when the response contains inappropriate content.
+
+```json
+{
+  "error": "'I cannot answer that! 😅'"
+}
+```
+</TabItem>
+<TabItem label="Missing API key">
+This error is returned when the advancedOptions request body is missing apikey.
+```json
+{
+  "error": "Invalid API key. Please provide a valid API key."
+}
+```
+</TabItem>
+<TabItem label="Invalid API key/Model">
+This error is returned when the advancedOptions request body is missing apikey.
+```json
+{
+  "error": "Wrong API key! or Model not supported!"
+}
+```
+</TabItem>
+<TabItem label="Missing ID">
+This error is returned `isMemory` is set to true and the `advancedOptions` request body is missing id.
+```json
+{
+  "error": "Missing user ID. Please provide a valid user ID."
+}
+```
+</TabItem>
+</Tabs>
+
+## Rate Limiting
+
+Requests to this endpoint are subject to rate limiting. You can include the API key in the request body to bypass rate limiting.
+
+## Examples
+
+### Example Request
+
+```json
+POST /chat
+
+{
+  "prompt": "Tell me a joke",
+  "character": "John",
+  "source": "Comedy Series",
+  "advancedOptions": {
+    "apikey": "your_api_key"
+  }
+}
+```
+
+### Example Response
+
+```json
+{
+  "response": "Why did the chicken cross the road? To get to the other side!"
+}
+```
+
+
+## Types
+
+### prompt
+
+| **Type**  | **Description**                     | **Example**          |
+|-----------|-------------------------------------|----------------------|
+| _string_  | The user's input or prompt.         | `"Tell me a joke."`  |
+
+### character
+
+| **Type**  | **Description**                                       | **Example**            |
+|-----------|-------------------------------------------------------|------------------------|
+| _string_  | The character's name for which the response is generated. | `"Sherlock Holmes"`    |
+
+### source
+
+| **Type**  | **Description**                               | **Example**                |
+|-----------|-----------------------------------------------|----------------------------|
+| _string_  | The series or source associated with the character. | `"Sherlock Holmes Series"` |
+
+### advancedOptions
+**Type:** _object_
+
+| **Parameter**  | **Type**   | **Description**                                                            | **Example**                |
+|----------------|------------|----------------------------------------------------------------------------|----------------------------|
+| **apikey**     | _string_   | Authentication (bypasses rate limiting). [GeminiAI](https://makersuite.google.com/app/apikey)/[OpenAI](https://platform.openai.com/api-keys)*                 | `"your-api-key"`           |
+| **id**         | _string_   | Identifier for the user.                                                   | `"user123"`                |
+| **isMemory**   | _boolean_  | Indicates whether the conversation history should be maintained.           | `true`                     |
+| **chatModel**  | _string_   | The chat model to be used (e.g., "gemini-pro" or "gpt-3.5-turbo").          | `"gemini-pro"`             |
+| **outlimit**   | _number_   | Maximum number of tokens in the generated response. (0-2024)                       | `150`                      |
+| [**safetySettings**](#safety-settings) | _object_ | Safety settings for the response.                                          | [Example](#safety-settings-example) |
+
+**Example** 
+<Tabs>
+<TabItem label="cURL">
+```bash "POST" "https://personalityai.onrender.com/chat"
+curl -X POST -H "Content-Type: application/json" -d '{
+  "prompt": "Your prompt here",
+  "character": "Character Name",
+  "source": "Series Name",
+  "advancedOptions": {
+    "apikey": "your-api-key",
+    "id": "user-123",
+    "isMemory": true,
+    "chatModel": "gemini-pro",
+    "outlimit": 200,
+    "safetySettings": {
+      "Harassment": "None",
+      "SexuallyExplicit": "High"
+    }
+  }
+}' https://personalityai.onrender.com/chat
+```
+</TabItem>
+
+<TabItem label="HTTP Request String">
+```http "POST" "https://personalityai.onrender.com/chat"
+POST /chat HTTP/1.1
+Host: https://personalityai.onrender.com/chat
+Content-Type: application/json
+
+{
+  "prompt": "Your prompt here",
+  "character": "Character Name",
+  "source": "Series Name",
+  "advancedOptions": {
+    "apikey": "your-api-key",
+    "id": "user-123",
+    "isMemory": true,
+    "chatModel": "gemini-pro",
+    "outlimit": 200,
+    "safetySettings": {
+      "Harassment": "None",
+      "SexuallyExplicit": "High"
+    }
+  }
+}
+```
+</TabItem>
+
+<TabItem label="Fetch (JS)">
+```js "POST" "https://personalityai.onrender.com/chat"
+// my-test-file.js
+const apiUrl = 'https://personalityai.onrender.com/chat';
+
+const requestData = {
+  prompt: 'Your prompt here',
+  character: 'Character Name',
+  source: 'Series Name',
+  advancedOptions: {
+    apikey: 'your-api-key',
+    id: 'user-123',
+    isMemory: true,
+    chatModel: 'gemini-pro',
+    outlimit: 200,
+    safetySettings: {
+      Harassment: 'None',
+      SexuallyExplicit: 'High'
+    }
+  }
+};
+
+const data = await fetch(apiUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(requestData),
+});
+const response = await data.text();
+console.log(response);
+```
+
+</TabItem>
+</Tabs>
+
+
+## Safety Settings
+
+:::danger
+The Personality API provides adjustable safety settings to control the generation of content based on different categories and thresholds. 
+- Adjusting safety settings, particularly to lower values, may trigger a more in-depth review process for your application. 
+- The API incorporates built-in protections against core harms, including content that endangers child safety.
+:::
+
+### Categories
+
+| Category               | Description                                              |
+|------------------------|----------------------------------------------------------|
+| Harassment             | Unwanted, harmful, or offensive behavior towards others. |
+| Sexually Explicit      | Content of a sexual nature or containing explicit material.|
+| Hate Speech            | Speech that promotes violence or discrimination against a group or individual.|
+| Unspecified            | General category for unspecified content concerns.        |
+| Dangerous Content      | Content that may pose a threat or harm to users.          |
+
+### Thresholds
+
+The following thresholds can be applied to each category:
+
+| Threshold  | Description                                                |
+|------------|------------------------------------------------------------|
+| None       | No blocking based on the specified category.                |
+| Low        | Blocks content considered low risk and above.               |
+| Medium     | Blocks content considered medium risk and above.            |
+| High       | Blocks content considered high risk and above.              |
+| Default    | Default setting, blocking content according to the API's standard safety measures.|
+
+Adjusting these thresholds allows customization of the content generation based on the desired level of safety for each category.
+
+It's recommended to carefully consider the implications of adjusting safety settings to ensure compliance with guidelines and regulations related to content generation and user safety.
+
+#### Safety Settings Example
+
+```json
+{
+  "Harassment": "None",
+  "SexuallyExplicit": "High",
+  "HateSpeech": "Medium",
+  "Unspecified": "Default",
+  "DangerousContent": "None"
+}
+```
+

@@ -1,0 +1,111 @@
+---
+title: Chat History Retrieval Endpoint
+description: API documentation
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import Summary from '../../../components/Summary.astro';
+
+<Summary method="get" path="/chat-history/:userId" urls="https://personalityai.onrender.com/chat-history/user123"></Summary>
+
+:::tip[Description]
+The `/chat-history/:userId` endpoint allows users to retrieve the chat history for a specific user identified by `userId`, providing insights into past interactions with the chatbot.
+:::
+
+## Request
+
+> Headers - **Content-Type:** `application/json`
+
+## Path Parameter
+
+| Parameter | Type    | Description                                     | Required |
+|-----------|---------|-------------------------------------------------|----------|
+| [userId](#userId) | _string_ | The unique identifier for the user.          | ✔        |
+
+## Examples
+
+### Example Request
+
+<Tabs>
+  <TabItem label="cURL">
+    ```bash "GET" "https://personalityai.onrender.com/chat-history/user123"
+    curl -X GET https://personalityai.onrender.com/chat-history/user123
+    ```
+  </TabItem>
+
+  <TabItem label="HTTP Request String">
+    ```http "GET" "https://personalityai.onrender.com/chat-history/user123"
+    GET /chat-history/user123 HTTP/1.1
+    Host: https://personalityai.onrender.com
+    ```
+  </TabItem>
+
+  <TabItem label="Fetch (JS)">
+    ```js "GET" "https://personalityai.onrender.com/chat-history/user123"
+    const data = await fetch('https://personalityai.onrender.com/chat-history/user123', {
+      method: 'GET',
+    });
+    const response = await data.text();
+    console.log(response);
+    ```
+  </TabItem>
+</Tabs>
+
+
+## Response
+
+### Body
+
+The API response will be a JSON object containing the user's chat history.
+
+**Example:**
+```json
+{
+  "id": "user123",
+  "chatHistory": [
+    { "role": "user", "content": "Hi" },
+    { "role": "assistant", "content": "Hello! How can I assist you today?" },
+    // Additional conversation messages...
+  ]
+}
+```
+
+### Error Response
+
+In case the user's chat history is not found, an error response will be returned.
+
+**Example:**
+```json
+{
+  "error": "User chat history not found"
+}
+```
+
+## Types
+
+### userId
+
+| **Type**  | **Description**                        | **Example** |
+|-----------|----------------------------------------|-------------|
+| _string_  | The unique identifier for the user.    | `"user123"` |
+
+### Examples
+
+#### Example Request
+
+```json
+GET /chat-history/user123
+```
+
+#### Example Response
+
+```json
+{
+  "id": "user123",
+  "chatHistory": [
+    { "role": "user", "content": "Hi" },
+    { "role": "assistant", "content": "Hello! How can I assist you today?" },
+    // Additional conversation messages...
+  ]
+}
+```

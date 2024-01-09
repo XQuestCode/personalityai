@@ -1,0 +1,68 @@
+---
+title: Test endpoint
+description: API documentation
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import Summary from '../../../components/Summary.astro';
+
+<Summary method="get" path="/test" urls="https://personalityai.onrender.com/test"></Summary>
+
+:::tip[Description]
+The `/test` endpoint is a simple test endpoint to verify the functionality of the API.
+:::
+
+## Examples
+
+<Tabs>
+<TabItem label="cURL">
+```bash
+curl http://your-api-host/test
+```
+</TabItem>
+
+<TabItem label="HTTP Request String">
+```http
+GET /test HTTP/1.1
+Host: your-api-host
+```
+</TabItem>
+
+<TabItem label="Fetch (JS)">
+```js
+// my-test-file.js
+const apiUrl = 'http://your-api-host/test';
+
+const data = await fetch(apiUrl);
+const response = await data.text();
+console.log(response);
+```
+</TabItem>
+</Tabs>
+
+## Response
+
+### Body
+
+The response will be a simple text string indicating the functionality of the API.
+
+**Example:**
+```plaintext
+The API is working!
+```
+
+## Error Handling
+
+In case of an error, the response will include an error message.
+
+<Tabs>
+<TabItem label="Invalid URL">
+This error is returned when an invalid URL is accessed.
+
+```plaintext
+Invalid URL!
+```
+</TabItem>
+</Tabs>
+
+This endpoint is primarily used for testing purposes and provides a quick confirmation of the API's operational status.
